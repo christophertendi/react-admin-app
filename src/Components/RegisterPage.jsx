@@ -57,11 +57,20 @@ const RegisterPage = ({ onRegister, toggleLogin }) => {
       const userCredential = await auth.createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
 
+      // Send email verification
+      await user.sendEmailVerification();
+
       // Save user data to Firestore
       await db.collection("users").add({
         uid: user.uid,
         email: user.email
       });
+
+      // Notify user to check their email
+      alert('Registration successful! Please check your email to verify your account.');
+
+      // Optionally, you can sign out the user immediately after registration
+      await auth.signOut();
 
       onRegister();
     } catch (err) {

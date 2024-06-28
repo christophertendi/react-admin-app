@@ -54,8 +54,15 @@ const LoginPage = ({ onLogin, toggleRegister }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await auth.signInWithEmailAndPassword(email, password);
-      onLogin();
+      const userCredential = await auth.signInWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+
+      if (!user.emailVerified) {
+        await auth.signOut();
+        setError('Please verify your email before logging in.');
+      } else {
+        onLogin();
+      }
     } catch (err) {
       setError(err.message);
     }
